@@ -9,12 +9,10 @@ namespace Rusty.Textures.Editor
         {
             foreach (string path in importedAssets)
             {
-                UnityEngine.Debug.Log(path);
                 TextureSet set = AssetDatabase.LoadAssetAtPath<TextureSet>(path);
                 if (set == null)
                     continue;
 
-                UnityEngine.Debug.Log(path);
                 if (set.Count > 0)
                 {
                     EditorGUIUtility.SetIconForObject(set, set[0]);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 
 #if UNITY_5_3_OR_NEWER
 using UnityEngine;
@@ -28,6 +29,7 @@ namespace Rusty.Textures
             List<string> names = new List<string>();
             List<Texture2D> textures = new List<Texture2D>();
             List<bool> normalmap = new List<bool>();
+            IniFile ini = new IniFile();
             using (ZipArchive archive = ZipFile.OpenRead(path))
             {
                 foreach (ZipArchiveEntry entry in archive.Entries)
@@ -58,10 +60,32 @@ namespace Rusty.Textures
                         }
                         else if (extension == "ini")
                         {
-
+                            using (var stream2 = entry.Open())
+                            using (var reader2 = new StreamReader(stream2, Encoding.UTF8))
+                            {
+                                ini.Load(reader2);
+                            }
                         }
 
                         normalmap.Add(name.ToLower().Contains("normal"));
+                    }
+                }
+            }
+
+            // Apply INI.
+            if (ini != null)
+            {
+                TextureSet set2 = new TextureSet();
+
+                foreach (string sectionKey in ini.Keys)
+                {
+                    IniSection section = ini[sectionKey];
+                    foreach (string valueKey in section.Keys)
+                    {
+                        IniValue value = section[valueKey];
+                        string lowercase = valueKey.ToLower();
+                        if (lowercase == "normal_map")
+                            Debug.Log(sectionKey + " is a normal map!");
                     }
                 }
             }

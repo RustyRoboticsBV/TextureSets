@@ -48,7 +48,7 @@ namespace Rusty.Textures
             }
 
             // Create texture set.
-            TextureSet set = new TextureSet();
+            TextureSet set = TextureSet.CreateNew();
             for (int i = 0; i < names.Count; i++)
             {
                 set.Add(names[i], textures[i]);
@@ -70,6 +70,7 @@ namespace Rusty.Textures
 #elif UNITY_5_3_OR_NEWER
             Texture2D texture = new Texture2D(1, 1);
             texture.LoadImage(bytes);
+            texture.name = name;
             return texture;
 #else
             throw new NotImplementedException($"{nameof(TextureSetLoader)}.{nameof(CreatePngTexture)} cannot be used in this context.");

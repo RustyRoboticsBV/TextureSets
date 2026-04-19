@@ -18,6 +18,7 @@ namespace Rusty.Textures
 {
     [Serializable]
 #if UNITY_5_3_OR_NEWER
+    [CreateAssetMenu(menuName = "Assets/Texture Set")]
     public sealed class TextureSet : ScriptableObject
 #elif GODOT
     [GlobalClass]
@@ -35,13 +36,26 @@ namespace Rusty.Textures
         public List<NamedTexture> Textures { get; private set; } = new List<NamedTexture>();
 #endif
 
+        /* Public properties. */
+        public int Count => Textures.Count;
+
         /* Public indexers. */
         public Texture2D this[string name] => Get(name);
+        public Texture2D this[int index] => Textures[index].Texture;
+
+        /* Public methods. */
+        public static TextureSet CreateNew()
+        {
+#if UNITY_5_3_OR_NEWER
+            return CreateInstance<TextureSet>();
+#else
+            return new TextureSet();
+#endif
+        }
 
         /// <summary>
         /// Add a texture to the set.
         /// </summary>
-        /* Public methods. */
         public void Add(string name, Texture2D texture)
         {
             Textures.Add(new NamedTexture(name, texture));

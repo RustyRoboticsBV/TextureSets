@@ -10,7 +10,12 @@ ZIP files may contain BMP, JPG and PNG images. Files with `normal` in the title 
 You can control how textures are loaded by including an INI file in the ZIP archive. This allows you to:
 - Define a texture name (using the section name).
 - Mark a texture as a normal map, using the `normal_map` property.
+- Enable mipmaps, using the `mipmap` property.
 - Define a texture's sources. A source can either be an image path, or a value between `0.0` and `1.0`. You can either define one source using the `source` property, or target specific channels by using things like `source_r` or `source_rgb`. The latter allows for automatic channel packing of several textures into one.
+- *Unity only* (these are ignored in Godot):
+  - Set the wrap mode, using the `wrap` property. It can be `"repeat"`, `"clamp"`, `"mirror"` or `"mirror_once"`.
+  - Set the filter mode, using the `filter` property. It can be `"point"`, `"bilinear"` or `"trilinear"`.
+  - Set the aniso level, using the `aniso` property. It can be a number between 1 and 16.
 
 The example below loads an albedo-alpha, normal, metal-roughness-occlusion and emission map.
 
@@ -18,6 +23,9 @@ The example below loads an albedo-alpha, normal, metal-roughness-occlusion and e
 [AlbedoAlpha]
 source_rgb = "Albedo.png"
 source_a = 1.0
+mipmaps = true
+filter = "bilinear"
+aniso = 16
 
 [Normal]
 source = "Normal.png"

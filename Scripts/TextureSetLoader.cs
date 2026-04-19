@@ -29,6 +29,7 @@ namespace Rusty.Textures
             List<string> names = new List<string>();
             List<Texture2D> textures = new List<Texture2D>();
             List<bool> normalmap = new List<bool>();
+            List<bool> mipmap = new List<bool>();
             IniFile ini = new IniFile();
             using (ZipArchive archive = ZipFile.OpenRead(path))
             {
@@ -75,7 +76,7 @@ namespace Rusty.Textures
             // Apply INI.
             if (ini != null)
             {
-                TextureSet set2 = new TextureSet();
+                TextureSet set2 = TextureSet.CreateNew();
 
                 foreach (string sectionKey in ini.Keys)
                 {
@@ -84,8 +85,10 @@ namespace Rusty.Textures
                     {
                         IniValue value = section[valueKey];
                         string lowercase = valueKey.ToLower();
+                        if (lowercase == "mipmap")
+                            Debug.Log(sectionKey + $" should have mipmap mode: {value.GetString()}!");
                         if (lowercase == "normal_map")
-                            Debug.Log(sectionKey + " is a normal map!");
+                            Debug.Log(sectionKey + $" should have normal map mode: {value.GetString()}!");
                     }
                 }
             }

@@ -7,18 +7,21 @@ ZIP files may contain BMP, JPG and PNG images. Files with `normal` in the title 
 
 ## INI Loading
 
-You can control how textures are loaded by including an INI file in the ZIP archive. This allows you to mark images as normal maps, or pack several images into one. When combining images, omitted channels are always treated as black.
+You can control how textures are loaded by including an INI file in the ZIP archive. This allows you to:
+- Define a texture name (using the section name).
+- Mark a texture as a normal map, using the `normal_map` property.
+- Define a texture's sources. A source can either be an image path, or a value between `0.0` and `1.0`. You can either define one source using the `source` property, or target specific channels by using things like `source_r` or `source_rgb`. The latter allows for automatic channel packing of several textures into one.
 
 The example below loads an albedo-alpha, normal, metal-roughness-occlusion and emission map.
 
 ```
 [AlbedoAlpha]
 source_rgb = "Albedo.png"
-source_a = "Alpha.png"
+source_a = 1.0
 
 [Normal]
 source = "Normal.png"
-normal_map = 1
+normal_map = true
 
 [MetalRoughness]
 source_r = "Metal.png"

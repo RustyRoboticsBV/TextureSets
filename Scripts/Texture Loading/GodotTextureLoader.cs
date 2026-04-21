@@ -1,4 +1,4 @@
-﻿#if GODOT
+#if GODOT
 using System;
 using Godot;
 
@@ -16,7 +16,7 @@ namespace Rusty.Textures
             Error err = image.LoadBmpFromBuffer(bytes);
 
             if (err != Error.Ok)
-                throw new System.Exception($"Failed to load BMP: {err}");
+                throw new Exception($"Failed to load BMP: {err}");
 
             return ImageTexture.CreateFromImage(image);
         }
@@ -27,7 +27,7 @@ namespace Rusty.Textures
             Error err = image.LoadPngFromBuffer(bytes);
 
             if (err != Error.Ok)
-                throw new System.Exception($"Failed to load PNG: {err}");
+                throw new Exception($"Failed to load PNG: {err}");
 
             return ImageTexture.CreateFromImage(image);
         }
@@ -38,7 +38,7 @@ namespace Rusty.Textures
             Error err = image.LoadJpgFromBuffer(bytes);
 
             if (err != Error.Ok)
-                throw new System.Exception($"Failed to load JPG: {err}");
+                throw new Exception($"Failed to load JPG: {err}");
 
             return ImageTexture.CreateFromImage(image);
         }

@@ -20,4 +20,4 @@ project/assembly_name="Texture Sets"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/TextureSetImporter/plugin.cfg")
+enabled=PackedStringArray("res://addons/TextureSetImporter/plugin.cfg", "res://addons/ZipTextureImporter/plugin.cfg")

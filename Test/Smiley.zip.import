@@ -1,7 +1,7 @@
 [remap]
 
-importer="texture_set_importer"
-type="TextureSet"
+importer="zip_texture_set_importer"
+type="Texture2D"
 uid="uid://b5piko5y75p87"
 path="res://.godot/imported/Smiley.zip-3cb727ad4aade7d20dd1bf31567375f6.tres"
 
@@ -12,4 +12,7 @@ dest_files=["res://.godot/imported/Smiley.zip-3cb727ad4aade7d20dd1bf31567375f6.t
 
 [params]
 
-red_source=""
+r_channel_source="Albedo"
+g_channel_source="Albedo"
+b_channel_source=""
+a_channel_source=""

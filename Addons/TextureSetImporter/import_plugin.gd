@@ -23,7 +23,10 @@ func _get_preset_name(_preset_index: int) -> String:
 	return "Default";
 
 func _get_import_options(_path: String, _preset_index: int) -> Array:
-	return [];
+	return [{
+		"name": "red_source",
+		"default_value": ""
+	}];
 
 func _get_option_visibility(_path: String, _option_name: StringName, _options: Dictionary) -> bool:
 	return true;

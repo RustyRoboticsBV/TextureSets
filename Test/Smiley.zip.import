@@ -1,0 +1,15 @@
+[remap]
+
+importer="texture_set_importer"
+type="TextureSet"
+uid="uid://b5piko5y75p87"
+path="res://.godot/imported/Smiley.zip-3cb727ad4aade7d20dd1bf31567375f6.tres"
+
+[deps]
+
+source_file="res://Test/Smiley.zip"
+dest_files=["res://.godot/imported/Smiley.zip-3cb727ad4aade7d20dd1bf31567375f6.tres"]
+
+[params]
+
+red_source=""

@@ -1,0 +1,15 @@
+[remap]
+
+importer="texture_set_importer"
+type="TextureSet"
+uid="uid://bm55yj5cu4i6q"
+path="res://.godot/imported/Test.zip-962de9953212b7f9588ab0bb4e020e27.tres"
+
+[deps]
+
+source_file="res://Test/Test.zip"
+dest_files=["res://.godot/imported/Test.zip-962de9953212b7f9588ab0bb4e020e27.tres"]
+
+[params]
+
+red_source=""

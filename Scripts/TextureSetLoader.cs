@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Xml.Linq;
+
 
 #if UNITY_5_3_OR_NEWER
 using UnityEngine;
@@ -28,78 +30,76 @@ namespace Rusty.Textures
         /// </summary>
         public static TextureSet Load(string path)
         {
-            // Load textures from the ZIP.
-            List<string> names = new List<string>();
-            List<Texture2D> textures = new List<Texture2D>();
-            List<bool> normalmap = new List<bool>();
-            List<bool> mipmap = new List<bool>();
-            IniFile ini = new IniFile();
-            using (ZipArchive archive = ZipFile.OpenRead(path))
+            try
             {
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                // Load textures from the ZIP.
+                List<string> names = new List<string>();
+                List<Texture2D> textures = new List<Texture2D>();
+                List<bool> normalmap = new List<bool>();
+                List<bool> mipmap = new List<bool>();
+                IniFile ini = new IniFile();
+                using (ZipArchive archive = ZipFile.OpenRead(path))
                 {
-                    string lowercase = entry.Name.ToLower();
-                    string extension = lowercase.Substring(lowercase.LastIndexOf('.') + 1);
-                    string name = entry.Name.Substring(0, entry.Name.Length - extension.Length - 1);
-                    switch (extension)
+                    foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        case "bmp":
-                        case "png":
-                        case "jpg":
-                        case "jpeg":
-                            names.Add(name);
-                            textures.Add(loader.Load(entry));
-                            normalmap.Add(lowercase.Contains("normal"));
-                            break;
-                        case "ini":
-                            using (var stream = entry.Open())
-                            using (var reader = new StreamReader(stream, Encoding.UTF8))
-                            {
-                                ini.Load(reader);
-                            }
+                        string lowercase = entry.Name.ToLower();
+                        string extension = lowercase.Substring(lowercase.LastIndexOf('.') + 1);
+                        string name = entry.Name.Substring(0, entry.Name.Length - extension.Length - 1);
+                        switch (extension)
+                        {
+                            case "bmp":
+                            case "png":
+                            case "jpg":
+                            case "jpeg":
+                                names.Add(name);
+                                textures.Add(loader.Load(entry));
+                                normalmap.Add(lowercase.Contains("normal"));
+                                break;
+                            case "ini":
+                                using (var stream = entry.Open())
+                                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                                {
+                                    ini.Load(reader);
+                                }
 
-                            normalmap.Add(name.ToLower().Contains("normal"));
-                            break;
+                                normalmap.Add(name.ToLower().Contains("normal"));
+                                break;
+                        }
                     }
                 }
-            }
 
-            // Apply INI.
-            if (ini != null)
-            {
-                TextureSet set2 = TextureSet.CreateNew();
-
-                foreach (string sectionKey in ini.Keys)
+                // Apply INI.
+                if (ini != null)
                 {
-                    IniSection section = ini[sectionKey];
-                    foreach (string valueKey in section.Keys)
+                    TextureSet set2 = TextureSet.CreateNew();
+
+                    foreach (string sectionKey in ini.Keys)
                     {
-                        IniValue value = section[valueKey];
-                        string lowercase = valueKey.ToLower();
-                        if (lowercase == "format")
-                            Debug.Log(sectionKey + $" should have format: {value.GetString()}!");
-                        if (lowercase == "filter")
-                            Debug.Log(sectionKey + $" should have filter: {value.GetString()}!");
-                        if (lowercase == "compression")
-                            Debug.Log(sectionKey + $" should have compression: {value.GetString()}!");
-                        if (lowercase == "mipmap")
-                            Debug.Log(sectionKey + $" should have mipmap mode: {value.GetString()}!");
-                        if (lowercase == "normal_map")
-                            Debug.Log(sectionKey + $" should have normal map mode: {value.GetString()}!");
+                        IniSection section = ini[sectionKey];
+                        foreach (string valueKey in section.Keys)
+                        {
+                            IniValue value = section[valueKey];
+                            string lowercase = valueKey.ToLower();
+                            // TODO: interpret
+                        }
                     }
                 }
-            }
 
-            // Create texture set.
-            TextureSet set = TextureSet.CreateNew();
-            for (int i = 0; i < names.Count; i++)
-            {
-                if (normalmap[i])
-                    textures[i] = ConvertToNormalMap(textures[i]);
-                set.Add(names[i], textures[i]);
-                Debug.Log(names[i]);
+                // Create texture set.
+                TextureSet set = TextureSet.CreateNew();
+                for (int i = 0; i < names.Count; i++)
+                {
+                    if (normalmap[i])
+                        textures[i] = ConvertToNormalMap(textures[i]);
+                    set.Add(names[i], textures[i]);
+                }
+                return set;
             }
-            return set;
+            catch (Exception exception)
+            {
+                ReportError(exception.Message);
+                return null;
+            }
         }
 
         /* Private methods. */
@@ -138,7 +138,7 @@ namespace Rusty.Textures
             normalTex.Apply();
             return normalTex;
 #elif GODOT
-            throw Throw(nameof(ConvertToNormalMap));
+            return source;
 #else
             throw Throw(nameof(ConvertToNormalMap));
 #endif
@@ -147,6 +147,15 @@ namespace Rusty.Textures
         private static NotImplementedException Throw(string name)
         {
             return new NotImplementedException($"{nameof(TextureSetLoader)}.{name} cannot be used in this context.");
+        }
+
+        private static void ReportError(string message)
+        {
+#if UNITY_5_3_OR_NEWER
+            Debug.LogError(message);
+#elif GODOT
+            GD.PushError(message);
+#endif
         }
     }
 }

@@ -1,7 +1,7 @@
 [remap]
 
-importer="texture_set_importer"
-type="TextureSet"
+importer="zip_texture_set_importer"
+type="Texture2D"
 uid="uid://bm55yj5cu4i6q"
 path="res://.godot/imported/Test.zip-962de9953212b7f9588ab0bb4e020e27.tres"
 
@@ -12,3 +12,8 @@ dest_files=["res://.godot/imported/Test.zip-962de9953212b7f9588ab0bb4e020e27.tre
 
 [params]
 
+r_channel_source="albedo"
+g_channel_source="mgs"
+b_channel_source="occlusion"
+a_channel_source=""
+is_normal_map=false

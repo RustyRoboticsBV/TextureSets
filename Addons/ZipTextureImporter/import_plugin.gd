@@ -11,7 +11,7 @@ func _get_recognized_extensions() -> PackedStringArray:
 	return ["zip"];
 
 func _get_save_extension() -> String:
-	return "tres";
+	return "res";
 
 func _get_resource_type() -> String:
 	return "Texture2D";
@@ -39,19 +39,34 @@ func _get_import_options(_path: String, _preset_index: int) -> Array:
 		{
 			"name": "a_channel_source",
 			"default_value": ""
+		},
+		{
+			"name": "use_mipmaps",
+			"default_value": true
+		},
+		{
+			"name": "is_normal_map",
+			"default_value": false
 		}
 	];
 
 func _get_option_visibility(_path: String, _option_name: StringName, _options: Dictionary) -> bool:
 	return true;
 
-func _import(source_file: String, save_path: String, options: Dictionary, platform_variants: Array, gen_files: Array) -> Error:
+func _import(source_file: String, save_path: String, options: Dictionary, _platform_variants: Array, _gen_files: Array) -> Error:
 	var global_path : String = ProjectSettings.globalize_path(source_file);
-	var texture_set = ZipTextureLoader.Load(global_path,
+	var texture : ImageTexture = ZipTextureLoader.Load(global_path,
 		options.r_channel_source,
 		options.g_channel_source,
 		options.b_channel_source,
 		options.a_channel_source
 	);
+	
+	if options.use_mipmaps:
+		texture.get_image().generate_mipmaps(true);
+	
+	if options.is_normal_map:
+		texture.get_image().compress(Image.CompressMode.COMPRESS_S3TC, Image.COMPRESS_SOURCE_NORMAL);
+	
 	var save_file = "%s.%s" % [save_path, _get_save_extension()];
-	return ResourceSaver.save(texture_set, save_file);
+	return ResourceSaver.save(texture, save_file);

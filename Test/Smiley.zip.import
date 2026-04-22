@@ -3,16 +3,18 @@
 importer="zip_texture_set_importer"
 type="Texture2D"
 uid="uid://b5piko5y75p87"
-path="res://.godot/imported/Smiley.zip-3cb727ad4aade7d20dd1bf31567375f6.tres"
+path="res://.godot/imported/Smiley.zip-3cb727ad4aade7d20dd1bf31567375f6.res"
 
 [deps]
 
 source_file="res://Test/Smiley.zip"
-dest_files=["res://.godot/imported/Smiley.zip-3cb727ad4aade7d20dd1bf31567375f6.tres"]
+dest_files=["res://.godot/imported/Smiley.zip-3cb727ad4aade7d20dd1bf31567375f6.res"]
 
 [params]
 
-r_channel_source="Albedo"
-g_channel_source="Albedo"
-b_channel_source=""
+r_channel_source="Normal"
+g_channel_source="Normal"
+b_channel_source="Normal"
 a_channel_source=""
+is_normal_map=true
+use_mipmaps=true

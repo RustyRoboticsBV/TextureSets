@@ -16,3 +16,4 @@ r_channel_source="Metal"
 g_channel_source="Roughness"
 b_channel_source="Occlusion"
 a_channel_source=""
+is_normal_map=false

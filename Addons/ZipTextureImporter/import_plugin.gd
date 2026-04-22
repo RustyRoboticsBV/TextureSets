@@ -1,6 +1,66 @@
 @tool
 extends EditorImportPlugin;
 
+const Presets = [
+	"Default",
+	"Albedo",
+	"Albedo + Alpha",
+	"Normal",
+	"Metal",
+	"Roughness",
+	"Occlusion",
+	"ORM",
+	"Emission"
+];
+
+const Red = [
+	"",
+	"Albedo",
+	"Albedo",
+	"Normal",
+	"Metal",
+	"",
+	"",
+	"Occlusion",
+	"Emission"
+];
+
+const Green = [
+	"",
+	"Albedo",
+	"Albedo",
+	"Normal",
+	"",
+	"Roughness",
+	"",
+	"Roughness",
+	"Emission"
+];
+
+const Blue = [
+	"",
+	"Albedo",
+	"Albedo",
+	"Normal",
+	"",
+	"",
+	"Occlusion",
+	"Metal",
+	"Emission"
+];
+
+const Alpha = [
+	"",
+	"Albedo",
+	"Alpha",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"Emission"
+];
+
 func _get_importer_name() -> String:
 	return "zip_texture_set_importer";
 
@@ -17,28 +77,28 @@ func _get_resource_type() -> String:
 	return "Texture2D";
 
 func _get_preset_count() -> int:
-	return 1;
+	return Presets.size();
 
-func _get_preset_name(_preset_index: int) -> String:
-	return "Default";
+func _get_preset_name(preset_index: int) -> String:
+	return Presets[preset_index];
 
-func _get_import_options(_path: String, _preset_index: int) -> Array:
+func _get_import_options(_path: String, preset_index: int) -> Array:
 	return [
 		{
 			"name": "r_channel_source",
-			"default_value": ""
+			"default_value": Red[preset_index]
 		},
 		{
 			"name": "g_channel_source",
-			"default_value": ""
+			"default_value": Green[preset_index]
 		},
 		{
 			"name": "b_channel_source",
-			"default_value": ""
+			"default_value": Blue[preset_index]
 		},
 		{
 			"name": "a_channel_source",
-			"default_value": ""
+			"default_value": Alpha[preset_index]
 		},
 		{
 			"name": "use_mipmaps",
@@ -46,7 +106,7 @@ func _get_import_options(_path: String, _preset_index: int) -> Array:
 		},
 		{
 			"name": "is_normal_map",
-			"default_value": false
+			"default_value": Presets[preset_index] == "Normal"
 		}
 	];
 

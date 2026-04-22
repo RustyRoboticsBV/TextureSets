@@ -12,9 +12,9 @@ dest_files=["res://.godot/imported/Smiley.zip-3cb727ad4aade7d20dd1bf31567375f6.r
 
 [params]
 
-r_channel_source="Normal"
-g_channel_source="Normal"
-b_channel_source="Normal"
+r_channel_source="Occlusion"
+g_channel_source="Roughness"
+b_channel_source="Metal"
 a_channel_source=""
-is_normal_map=true
 use_mipmaps=true
+is_normal_map=false

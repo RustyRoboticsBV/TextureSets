@@ -14,8 +14,8 @@ public partial class ZipTextureLoader : Node
     /// </summary>
     public static ImageTexture Load(string path, string r, string g, string b, string a)
     {
-        TextureLoader loader = new TextureLoader();
-        ChannelPacker packer = new ChannelPacker();
+        ImageTextureLoader loader = new ImageTextureLoader();
+        ImageChannelPacker packer = new ImageChannelPacker();
 
         try
         {

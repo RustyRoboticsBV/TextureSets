@@ -1,4 +1,3 @@
-#if GODOT
 using Godot;
 
 namespace Rusty.Textures
@@ -6,7 +5,7 @@ namespace Rusty.Textures
     /// <summary>
     /// An Image channel packer.
     /// </summary>
-    public sealed class ChannelPacker : ChannelPacker<Image, Color>
+    public sealed class ImageChannelPacker : ChannelPacker<Image, Color>
     {
         /* Protected methods. */
         protected override Image Create(int width, int height)
@@ -47,4 +46,3 @@ namespace Rusty.Textures
             => (byte)color.A8;
     }
 }
-#endif

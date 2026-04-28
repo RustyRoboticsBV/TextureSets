@@ -12,9 +12,10 @@ dest_files=["res://.godot/imported/SmileyA.zip-46017924e4ea2bdc969e8f2d13d588a2.
 
 [params]
 
-r_channel_source="Emission"
-g_channel_source="Emission"
-b_channel_source="Emission"
-a_channel_source="Emission"
+r_channel_source="Albedo"
+g_channel_source="Albedo"
+b_channel_source="Albedo"
+a_channel_source="Albedo"
+compression="BPTC"
 use_mipmaps=true
 is_normal_map=false

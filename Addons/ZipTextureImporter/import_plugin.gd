@@ -61,6 +61,18 @@ const Alpha = [
 	"Emission"
 ];
 
+const Compression = [
+	"None",
+	"BPTC",
+	"BPTC",
+	"None",
+	"BPTC",
+	"BPTC",
+	"BPTC",
+	"BPTC",
+	"Emission"
+];
+
 func _get_importer_name() -> String:
 	return "zip_texture_set_importer";
 
@@ -101,6 +113,12 @@ func _get_import_options(_path: String, preset_index: int) -> Array:
 			"default_value": Alpha[preset_index]
 		},
 		{
+			"name": "compression",
+			"default_value": Compression[preset_index],
+			"property_hint": PROPERTY_HINT_ENUM,
+			"hint_string": "None,ASTC,BPTC,ETC,ETC2,S3TC"
+		},
+		{
 			"name": "use_mipmaps",
 			"default_value": true
 		},
@@ -110,7 +128,9 @@ func _get_import_options(_path: String, preset_index: int) -> Array:
 		}
 	];
 
-func _get_option_visibility(_path: String, _option_name: StringName, _options: Dictionary) -> bool:
+func _get_option_visibility(_path: String, option_name: StringName, options: Dictionary) -> bool:
+	if option_name == "compression" && options.is_normal_map:
+		return true;
 	return true;
 
 func _import(source_file: String, save_path: String, options: Dictionary, _platform_variants: Array, _gen_files: Array) -> Error:
@@ -126,7 +146,19 @@ func _import(source_file: String, save_path: String, options: Dictionary, _platf
 		texture.get_image().generate_mipmaps(true);
 	
 	if options.is_normal_map:
-		texture.get_image().compress(Image.CompressMode.COMPRESS_S3TC, Image.COMPRESS_SOURCE_NORMAL);
+		texture.get_image().compress(Image.CompressMode.COMPRESS_S3TC, Image.CompressSource.COMPRESS_SOURCE_NORMAL);
+	else:
+		match options.compression:
+			"ASTC":
+				texture.get_image().compress(Image.CompressMode.COMPRESS_ASTC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+			"BPTC":
+				texture.get_image().compress(Image.CompressMode.COMPRESS_BPTC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+			"ETC":
+				texture.get_image().compress(Image.CompressMode.COMPRESS_ETC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+			"ETC2":
+				texture.get_image().compress(Image.CompressMode.COMPRESS_ETC2, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+			"S3TC":
+				texture.get_image().compress(Image.CompressMode.COMPRESS_S3TC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
 	
 	var save_file = "%s.%s" % [save_path, _get_save_extension()];
 	return ResourceSaver.save(texture, save_file);

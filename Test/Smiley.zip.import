@@ -16,5 +16,6 @@ r_channel_source="Occlusion"
 g_channel_source="Roughness"
 b_channel_source="Metal"
 a_channel_source=""
+compression="None"
 use_mipmaps=true
 is_normal_map=false

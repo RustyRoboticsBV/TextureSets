@@ -13,9 +13,13 @@ dest_files=["res://.godot/imported/SmileyORM.zip-67feea0b5241c041857e36bc8e64241
 [params]
 
 r_channel_source="Occlusion"
+invert_r=false
 g_channel_source="Roughness"
+invert_g=false
 b_channel_source="Metal"
+invert_b=false
 a_channel_source=""
+invert_a=false
 compression="BPTC"
 use_mipmaps=true
 is_normal_map=false

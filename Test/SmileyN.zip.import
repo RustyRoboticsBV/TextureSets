@@ -13,9 +13,13 @@ dest_files=["res://.godot/imported/SmileyN.zip-2489d33300651dd95eb4913456925eb0.
 [params]
 
 r_channel_source="Normal"
+invert_r=false
 g_channel_source="Normal"
+invert_g=false
 b_channel_source="Normal"
+invert_b=false
 a_channel_source=""
-compression="None"
+invert_a=false
+compression="S3TC"
 use_mipmaps=true
 is_normal_map=true

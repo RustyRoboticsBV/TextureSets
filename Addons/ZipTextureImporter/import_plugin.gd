@@ -101,16 +101,32 @@ func _get_import_options(_path: String, preset_index: int) -> Array:
 			"default_value": Red[preset_index]
 		},
 		{
+			"name": "invert_r",
+			"default_value": false
+		},
+		{
 			"name": "g_channel_source",
 			"default_value": Green[preset_index]
+		},
+		{
+			"name": "invert_g",
+			"default_value": false
 		},
 		{
 			"name": "b_channel_source",
 			"default_value": Blue[preset_index]
 		},
 		{
+			"name": "invert_b",
+			"default_value": false
+		},
+		{
 			"name": "a_channel_source",
 			"default_value": Alpha[preset_index]
+		},
+		{
+			"name": "invert_a",
+			"default_value": false
 		},
 		{
 			"name": "compression",
@@ -178,36 +194,37 @@ func _import(source_file: String, save_path: String, options: Dictionary, _platf
 	var img_a : Image = load_image(reader, src_a);
 	
 	# Pack channels and create texture.
-	var texture : ImageTexture = pack_texture(img_r, img_g, img_b, img_a);
-	
-	if texture == null:
-		var img : Image = Image.create(1, 1, false, Image.FORMAT_RGBA8);
-		img.set_pixel(0, 0, Color(0, 0, 0, 1));
-		
-		texture = ImageTexture.create_from_image(img);
+	var img : Image = pack_image(img_r, img_g, img_b, img_a);
 	
 	# Apply settings.
+	invert_image_channel(img, options.invert_r, options.invert_g, options.invert_b, options.invert_a);
+	
 	if options.use_mipmaps:
-		texture.get_image().generate_mipmaps(true);
+		img.generate_mipmaps(true);
 	
 	if options.is_normal_map:
-		texture.get_image().compress(Image.CompressMode.COMPRESS_S3TC, Image.CompressSource.COMPRESS_SOURCE_NORMAL);
+		img.compress(Image.CompressMode.COMPRESS_S3TC, Image.CompressSource.COMPRESS_SOURCE_NORMAL);
 	else:
 		match options.compression:
 			"ASTC":
-				texture.get_image().compress(Image.CompressMode.COMPRESS_ASTC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+				img.compress(Image.CompressMode.COMPRESS_ASTC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
 			"BPTC":
-				texture.get_image().compress(Image.CompressMode.COMPRESS_BPTC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+				img.compress(Image.CompressMode.COMPRESS_BPTC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
 			"ETC":
-				texture.get_image().compress(Image.CompressMode.COMPRESS_ETC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+				img.compress(Image.CompressMode.COMPRESS_ETC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
 			"ETC2":
-				texture.get_image().compress(Image.CompressMode.COMPRESS_ETC2, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+				img.compress(Image.CompressMode.COMPRESS_ETC2, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
 			"S3TC":
-				texture.get_image().compress(Image.CompressMode.COMPRESS_S3TC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+				img.compress(Image.CompressMode.COMPRESS_S3TC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
 	
-	var save_file = "%s.%s" % [save_path, _get_save_extension()];
+	# Create texture.
+	var texture : ImageTexture = ImageTexture.create_from_image(img);
+	
+	# Save file.
+	var save_file : String = "%s.%s" % [save_path, _get_save_extension()];
 	return ResourceSaver.save(texture, save_file);
 
+# Loads an image from a ZIP file.
 func load_image(zip_reader : ZIPReader, path : String) -> Image:
 	if path.is_empty():
 		return null;
@@ -241,7 +258,8 @@ func load_image(zip_reader : ZIPReader, path : String) -> Image:
 			push_error("Unsupported file type: ." + ext);
 	return img;
 
-func pack_texture(img_r : Image, img_g : Image, img_b : Image, img_a : Image) -> ImageTexture:
+# Packs four images together.
+func pack_image(img_r : Image, img_g : Image, img_b : Image, img_a : Image) -> Image:
 	# Pick first available image as base.
 	var base_img : Image = null;
 	for img in [img_r, img_g, img_b, img_a]:
@@ -249,12 +267,15 @@ func pack_texture(img_r : Image, img_g : Image, img_b : Image, img_a : Image) ->
 			base_img = img;
 			break;
 	
+	# Handle empty images.
 	if base_img == null:
-		return null;
+		var empty_img : Image = Image.create(1, 1, false, Image.FORMAT_RGBA8);
+		empty_img.set_pixel(0, 0, Color(0, 0, 0, 1));
+		return empty_img;
 	
 	# Get dimensions.
-	var width = base_img.get_width()
-	var height = base_img.get_height()
+	var width = base_img.get_width();
+	var height = base_img.get_height();
 	
 	# Ensure all images match size.
 	for img in [img_r, img_g, img_b, img_a]:
@@ -263,7 +284,7 @@ func pack_texture(img_r : Image, img_g : Image, img_b : Image, img_a : Image) ->
 				img.resize(width, height, Image.INTERPOLATE_BILINEAR);
 	
 	# Create final image.
-	var final_img : Image = Image.create(width, height, false, Image.FORMAT_RGBA8)
+	var final_img : Image = Image.create(width, height, false, Image.FORMAT_RGBA8);
 	
 	for y in height:
 		for x in width:
@@ -274,5 +295,21 @@ func pack_texture(img_r : Image, img_g : Image, img_b : Image, img_a : Image) ->
 			
 			final_img.set_pixel(x, y, Color(r, g, b, a));
 	
-	# Create texture.
-	return ImageTexture.create_from_image(final_img);
+	return final_img;
+
+# Invert one or more channels.
+func invert_image_channel(img: Image, r : bool, g : bool, b : bool, a : bool) -> void:
+	for y in img.get_height():
+		for x in img.get_width():
+			var pixel = img.get_pixel(x, y);
+
+			if r:
+				pixel.r = 1.0 - pixel.r;
+			if g:
+				pixel.g = 1.0 - pixel.g;
+			if b:
+				pixel.b = 1.0 - pixel.b;
+			if a:
+				pixel.a = 1.0 - pixel.a;
+
+			img.set_pixel(x, y, pixel);

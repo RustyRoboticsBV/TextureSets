@@ -16,6 +16,6 @@ r_channel_source="Emission"
 g_channel_source="Emission"
 b_channel_source="Emission"
 a_channel_source="Emission"
-compression="Emission"
+compression="BPTC"
 use_mipmaps=true
 is_normal_map=false

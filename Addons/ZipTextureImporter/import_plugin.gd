@@ -216,13 +216,12 @@ func _get_option_visibility(_path: String, _option_name: StringName, _options: D
 	return true;
 
 func _import(source_file: String, save_path: String, options: Dictionary, _platform_variants: Array, _gen_files: Array) -> Error:
-	var error : Error = Error.OK;
-	
 	# Open ZIP file.
 	var reader : ZIPReader = ZIPReader.new();
-	error = reader.open(source_file);
+	var error = reader.open(source_file);
 	if error != Error.OK:
 		push_error("Could not open ZIP file at: " + source_file);
+		return error;
 	
 	# Find src images in ZIP.
 	var src_r : String = "";
@@ -244,23 +243,52 @@ func _import(source_file: String, save_path: String, options: Dictionary, _platf
 	
 	# Load source images.
 	if src_r == "" && options[RedSourceImage] != "":
-		push_error("Cannot read red channel image: " + options[RedSourceImage]);
+		push_error("Cannot read red channel source image: " + options[RedSourceImage]);
+		return Error.ERR_CANT_OPEN;
 	var img_r : Image = load_image(reader, src_r);
 	
 	if src_g == "" && options[GreenSourceImage] != "":
-		push_error("Cannot read green channel image: " + options[GreenSourceImage]);
-	var img_g : Image = load_image(reader, src_g);
+		push_error("Cannot read green channel source image: " + options[GreenSourceImage]);
+		return Error.ERR_CANT_OPEN;
+	var img_g : Image;
+	if src_g == src_r:
+		img_g = img_r;
+	else:
+		img_g = load_image(reader, src_g);
 	
 	if src_b == "" && options[BlueSourceImage] != "":
-		push_error("Cannot read blue channel image: " + options[BlueSourceImage]);
-	var img_b : Image = load_image(reader, src_b);
+		push_error("Cannot read blue channel source image: " + options[BlueSourceImage]);
+		return Error.ERR_CANT_OPEN;
+	var img_b : Image;
+	if src_b == src_r:
+		img_b = img_r;
+	elif src_b == src_g:
+		img_b = img_g;
+	else:
+		img_b  = load_image(reader, src_b);
 	
 	if src_a == "" && options[AlphaSourceImage] != "":
-		push_error("Cannot read alpha channel image: " + options[AlphaSourceImage]);
-	var img_a : Image = load_image(reader, src_a);
+		push_error("Cannot read alpha channel source image: " + options[AlphaSourceImage]);
+		return Error.ERR_CANT_OPEN;
+	var img_a : Image;
+	if src_a == src_r:
+		img_a = img_r;
+	elif src_a == src_g:
+		img_a = img_g;
+	elif src_a == src_b:
+		img_a = img_b;
+	else:
+		img_a = load_image(reader, src_a);
+	
+	reader.close();
 	
 	# Pack channels and create texture.
-	var img : Image = pack_image(img_r, img_g, img_b, img_a);
+	var img : Image = pack_image(
+		img_r, options[RedSourceChannel],
+		img_g, options[GreenSourceChannel],
+		img_b, options[BlueSourceChannel],
+		img_a, options[AlphaSourceChannel]
+	);
 	
 	# Apply inversions.
 	invert_image_channel(img, options[RedInvert], options[GreenInvert], options[BlueInvert], options[AlphaInvert]);
@@ -268,7 +296,12 @@ func _import(source_file: String, save_path: String, options: Dictionary, _platf
 	# Premultiply alpha.
 	if options[FormatPremultiplyAlpha]:
 		img.premultiply_alpha();
-		img = pack_image(img, img, img, null);
+		
+		for y in img.get_height():
+			for x in img.get_width():
+				var pixel = img.get_pixel(x, y);
+				pixel.a = 1.0;
+				img.set_pixel(x, y, pixel);
 	
 	# Mipmaps.
 	if options[FormatUseMipmaps]:
@@ -343,7 +376,14 @@ func load_image(zip_reader : ZIPReader, path : String) -> Image:
 	return img;
 
 # Packs four images together.
-func pack_image(img_r : Image, img_g : Image, img_b : Image, img_a : Image) -> Image:
+func pack_image(img_r : Image, remap_r : String, img_g : Image, remap_g : String, img_b : Image, remap_b : String, img_a : Image, remap_a : String) -> Image:
+	const channels = ["Red", "Green", "Blue", "Alpha"];
+	if img_r == img_g && img_g == img_b && img_b == img_a \
+		&& remap_r == channels[0] && remap_g == channels[1] \
+		&& remap_b == channels[2] && remap_a == channels[3]:
+		return img_r;
+	
+	print("kaas");
 	# Pick first available image as base.
 	var base_img : Image = null;
 	for img in [img_r, img_g, img_b, img_a]:
@@ -369,17 +409,34 @@ func pack_image(img_r : Image, img_g : Image, img_b : Image, img_a : Image) -> I
 	
 	# Create final image.
 	var final_img : Image = Image.create(width, height, false, Image.FORMAT_RGBA8);
-	
+	var channel_r : int = channels.find(remap_r);
+	var channel_g : int = channels.find(remap_g);
+	var channel_b : int = channels.find(remap_b);
+	var channel_a : int = channels.find(remap_a);
 	for y in height:
 		for x in width:
-			var r = img_r.get_pixel(x, y).r if img_r and not img_r.is_empty() else 0.0;
-			var g = img_g.get_pixel(x, y).g if img_g and not img_g.is_empty() else 0.0;
-			var b = img_b.get_pixel(x, y).b if img_b and not img_b.is_empty() else 0.0;
-			var a = img_a.get_pixel(x, y).a if img_a and not img_a.is_empty() else 1.0;
+			var r : float = get_pixel(img_r, channel_r, x, y, 0.0);
+			var g : float = get_pixel(img_g, channel_g, x, y, 0.0);
+			var b : float = get_pixel(img_b, channel_b, x, y, 0.0);
+			var a : float = get_pixel(img_a, channel_a, x, y, 1.0);
 			
 			final_img.set_pixel(x, y, Color(r, g, b, a));
 	
 	return final_img;
+
+func get_pixel(image : Image, src_channel : int, x : int, y : int, default_value : float) -> float:
+	if image != null && !image.is_empty():
+		var pixel : Color = image.get_pixel(x, y);
+		match src_channel:
+			0:
+				return pixel.r;
+			1:
+				return pixel.g;
+			2:
+				return pixel.b;
+			3:
+				return pixel.a;
+	return default_value;
 
 # Invert one or more channels.
 func invert_image_channel(img: Image, r : bool, g : bool, b : bool, a : bool) -> void:

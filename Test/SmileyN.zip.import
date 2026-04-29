@@ -15,6 +15,7 @@ dest_files=["res://.godot/imported/SmileyN.zip-2489d33300651dd95eb4913456925eb0.
 format/type="Normal Map"
 format/compression="S3TC"
 format/use_mipmaps=true
+format/premultiply_alpha=false
 red/source_image="Normal"
 red/source_channel="Red"
 red/invert=false

@@ -1,7 +1,6 @@
-[gd_resource type="ORMMaterial3D" load_steps=5 format=3 uid="uid://cruuvw4ga7mj3"]
+[gd_resource type="ORMMaterial3D" load_steps=4 format=3 uid="uid://cruuvw4ga7mj3"]
 
 [ext_resource type="Texture2D" uid="uid://da60cgu1k5xp2" path="res://Test/SmileyE.zip" id="1_b5wo8"]
-[ext_resource type="Texture2D" uid="uid://p54jocdg6bqn" path="res://Test/SmileyA.zip" id="2_rwfm2"]
 [ext_resource type="Texture2D" uid="uid://dq5kskl64lawm" path="res://Test/SmileyN.zip" id="3_hh60n"]
 [ext_resource type="Texture2D" uid="uid://cev6r3f2yotgl" path="res://Test/SmileyORM.zip" id="4_qu38g"]
 
@@ -9,7 +8,6 @@
 albedo_texture = ExtResource("1_b5wo8")
 orm_texture = ExtResource("4_qu38g")
 emission_enabled = true
-emission_energy_multiplier = 0.3
-emission_texture = ExtResource("2_rwfm2")
+emission_texture = ExtResource("1_b5wo8")
 normal_enabled = true
 normal_texture = ExtResource("3_hh60n")

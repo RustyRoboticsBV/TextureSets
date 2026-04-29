@@ -15,6 +15,7 @@ dest_files=["res://.godot/imported/SmileyORM.zip-67feea0b5241c041857e36bc8e64241
 format/type="Linear"
 format/compression="BPTC"
 format/use_mipmaps=true
+format/premultiply_alpha=false
 red/source_image="Occlusion"
 red/source_channel="Red"
 red/invert=false

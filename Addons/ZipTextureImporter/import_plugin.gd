@@ -1,6 +1,26 @@
 @tool
 extends EditorImportPlugin;
 
+const FormatType = "format/type";
+const FormatCompression = "format/compression";
+const FormatUseMipmaps = "format/use_mipmaps";
+
+const RedSourceImage = "red/source_image";
+const RedRemap = "red/remap";
+const RedInvert = "red/invert";
+
+const GreenSourceImage = "green/source_image";
+const GreenRemap = "green/remap";
+const GreenInvert = "green/invert";
+
+const BlueSourceImage = "blue/source_image";
+const BlueRemap = "blue/remap";
+const BlueInvert = "blue/invert";
+
+const AlphaSourceImage = "alpha/source_image";
+const AlphaRemap = "alpha/remap";
+const AlphaInvert = "alpha/invert";
+
 const Presets = [
 	"Default",
 	"Albedo",
@@ -61,6 +81,19 @@ const Alpha = [
 	"Emission"
 ];
 
+const CompressionSource = [
+	"sRGB",
+	"sRGB",
+	"sRGB",
+	"Normal Map",
+	"Linear",
+	"Linear",
+	"Linear",
+	"Linear",
+	"sRGB"
+	
+];
+
 const Compression = [
 	"BPTC",
 	"BPTC",
@@ -97,56 +130,84 @@ func _get_preset_name(preset_index: int) -> String:
 func _get_import_options(_path: String, preset_index: int) -> Array:
 	return [
 		{
-			"name": "r_channel_source",
+			"name": FormatType,
+			"default_value": CompressionSource[preset_index],
+			"property_hint": PROPERTY_HINT_ENUM,
+			"hint_string": "Linear,sRGB,Normal Map"
+		},
+		{
+			"name": FormatCompression,
+			"default_value": Compression[preset_index],
+			"property_hint": PROPERTY_HINT_ENUM,
+			"hint_string": "None,ASTC (4x4),ASTC (8x8),BPTC,ETC,ETC2,S3TC"
+		},
+		{
+			"name": FormatUseMipmaps,
+			"default_value": true
+		},
+		
+		{
+			"name": RedSourceImage,
 			"default_value": Red[preset_index]
 		},
 		{
-			"name": "invert_r",
-			"default_value": false
+			"name": RedRemap,
+			"default_value": "Red",
+			"property_hint": PROPERTY_HINT_ENUM,
+			"hint_string": "Red,Green,Blue,Alpha"
 		},
 		{
-			"name": "g_channel_source",
+			"name": RedInvert,
+			"default_value": false
+		},
+		
+		{
+			"name": GreenSourceImage,
 			"default_value": Green[preset_index]
 		},
 		{
-			"name": "invert_g",
-			"default_value": false
+			"name": GreenRemap,
+			"default_value": "Green",
+			"property_hint": PROPERTY_HINT_ENUM,
+			"hint_string": "Red,Green,Blue,Alpha"
 		},
 		{
-			"name": "b_channel_source",
+			"name": GreenInvert,
+			"default_value": false
+		},
+		
+		{
+			"name": BlueSourceImage,
 			"default_value": Blue[preset_index]
 		},
 		{
-			"name": "invert_b",
-			"default_value": false
+			"name": BlueRemap,
+			"default_value": "Blue",
+			"property_hint": PROPERTY_HINT_ENUM,
+			"hint_string": "Red,Green,Blue,Alpha"
 		},
 		{
-			"name": "a_channel_source",
+			"name": BlueInvert,
+			"default_value": false
+		},
+		
+		{
+			"name": AlphaSourceImage,
 			"default_value": Alpha[preset_index]
 		},
 		{
-			"name": "invert_a",
-			"default_value": false
-		},
-		{
-			"name": "compression",
-			"default_value": Compression[preset_index],
+			"name": AlphaRemap,
+			"default_value": "Alpha",
 			"property_hint": PROPERTY_HINT_ENUM,
-			"hint_string": "None,ASTC,BPTC,ETC,ETC2,S3TC"
+			"hint_string": "Red,Green,Blue,Alpha"
 		},
 		{
-			"name": "use_mipmaps",
-			"default_value": true
-		},
-		{
-			"name": "is_normal_map",
-			"default_value": Presets[preset_index] == "Normal"
+			"name": AlphaInvert,
+			"default_value": false
 		}
 	];
 
-func _get_option_visibility(_path: String, option_name: StringName, options: Dictionary) -> bool:
-	if option_name == "compression" && options.is_normal_map:
-		return true;
+func _get_option_visibility(_path: String, _option_name: StringName, _options: Dictionary) -> bool:
 	return true;
 
 func _import(source_file: String, save_path: String, options: Dictionary, _platform_variants: Array, _gen_files: Array) -> Error:
@@ -167,55 +228,68 @@ func _import(source_file: String, save_path: String, options: Dictionary, _platf
 	for file : String in files:
 		var ext : String = file.get_extension();
 		var trimmed = file.trim_suffix('.' + ext);
-		if file == options.r_channel_source || trimmed == options.r_channel_source:
+		if file == options[RedSourceImage] || trimmed == options[RedSourceImage]:
 			src_r = file;
-		if file == options.g_channel_source || trimmed == options.g_channel_source:
+		if file == options[GreenSourceImage] || trimmed == options[GreenSourceImage]:
 			src_g = file;
-		if file == options.b_channel_source || trimmed == options.b_channel_source:
+		if file == options[BlueSourceImage] || trimmed == options[BlueSourceImage]:
 			src_b = file;
-		if file == options.a_channel_source || trimmed == options.a_channel_source:
+		if file == options[AlphaSourceImage] || trimmed == options[AlphaSourceImage]:
 			src_a = file;
 	
 	# Load source images.
-	if src_r == "" && options.r_channel_source != "":
-		push_error("Cannot read red channel image: " + options.r_channel_source);
+	if src_r == "" && options[RedSourceImage] != "":
+		push_error("Cannot read red channel image: " + options[RedSourceImage]);
 	var img_r : Image = load_image(reader, src_r);
 	
-	if src_g == "" && options.g_channel_source != "":
-		push_error("Cannot read green channel image: " + options.g_channel_source);
+	if src_g == "" && options[GreenSourceImage] != "":
+		push_error("Cannot read green channel image: " + options[GreenSourceImage]);
 	var img_g : Image = load_image(reader, src_g);
 	
-	if src_b == "" && options.b_channel_source != "":
-		push_error("Cannot read blue channel image: " + options.b_channel_source);
+	if src_b == "" && options[BlueSourceImage] != "":
+		push_error("Cannot read blue channel image: " + options[BlueSourceImage]);
 	var img_b : Image = load_image(reader, src_b);
 	
-	if src_a == "" && options.a_channel_source != "":
-		push_error("Cannot read alpha channel image: " + options.a_channel_source);
+	if src_a == "" && options[AlphaSourceImage] != "":
+		push_error("Cannot read alpha channel image: " + options[AlphaSourceImage]);
 	var img_a : Image = load_image(reader, src_a);
 	
 	# Pack channels and create texture.
 	var img : Image = pack_image(img_r, img_g, img_b, img_a);
 	
-	# Apply settings.
-	invert_image_channel(img, options.invert_r, options.invert_g, options.invert_b, options.invert_a);
+	# Apply inversions.
+	invert_image_channel(img, options[RedInvert], options[GreenInvert], options[BlueInvert], options[AlphaInvert]);
 	
-	if options.use_mipmaps:
-		img.generate_mipmaps(true);
+	# Mipmaps.
+	if options[FormatUseMipmaps]:
+		if options[FormatType] == "Normal Map":
+			img.generate_mipmaps(true);
+		else:
+			img.generate_mipmaps(false);
 	
-	if options.is_normal_map:
-		img.compress(Image.CompressMode.COMPRESS_S3TC, Image.CompressSource.COMPRESS_SOURCE_NORMAL);
-	else:
-		match options.compression:
-			"ASTC":
-				img.compress(Image.CompressMode.COMPRESS_ASTC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
-			"BPTC":
-				img.compress(Image.CompressMode.COMPRESS_BPTC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
-			"ETC":
-				img.compress(Image.CompressMode.COMPRESS_ETC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
-			"ETC2":
-				img.compress(Image.CompressMode.COMPRESS_ETC2, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
-			"S3TC":
-				img.compress(Image.CompressMode.COMPRESS_S3TC, Image.CompressSource.COMPRESS_SOURCE_GENERIC);
+	# Compression.
+	var compress_source : Image.CompressSource = Image.CompressSource.COMPRESS_SOURCE_GENERIC;
+	match options[FormatType]:
+		"Linear":
+			compress_source = Image.CompressSource.COMPRESS_SOURCE_GENERIC;
+		"sRGB":
+			compress_source = Image.CompressSource.COMPRESS_SOURCE_SRGB;
+		"Normal Map":
+			compress_source = Image.CompressSource.COMPRESS_SOURCE_NORMAL;
+			
+	match options[FormatCompression]:
+		"ASTC (4x4)":
+			img.compress(Image.CompressMode.COMPRESS_ASTC, compress_source, Image.ASTCFormat.ASTC_FORMAT_4x4);
+		"ASTC (8x8)":
+			img.compress(Image.CompressMode.COMPRESS_ASTC, compress_source, Image.ASTCFormat.ASTC_FORMAT_8x8);
+		"BPTC":
+			img.compress(Image.CompressMode.COMPRESS_BPTC, compress_source);
+		"ETC":
+			img.compress(Image.CompressMode.COMPRESS_ETC, compress_source);
+		"ETC2":
+			img.compress(Image.CompressMode.COMPRESS_ETC2, compress_source);
+		"S3TC":
+			img.compress(Image.CompressMode.COMPRESS_S3TC, compress_source);
 	
 	# Create texture.
 	var texture : ImageTexture = ImageTexture.create_from_image(img);
@@ -299,6 +373,9 @@ func pack_image(img_r : Image, img_g : Image, img_b : Image, img_a : Image) -> I
 
 # Invert one or more channels.
 func invert_image_channel(img: Image, r : bool, g : bool, b : bool, a : bool) -> void:
+	if !r && !g && !b && !a:
+		return;
+	
 	for y in img.get_height():
 		for x in img.get_width():
 			var pixel = img.get_pixel(x, y);

@@ -12,14 +12,18 @@ dest_files=["res://.godot/imported/SmileyA.zip-46017924e4ea2bdc969e8f2d13d588a2.
 
 [params]
 
-r_channel_source="Albedo"
-invert_r=false
-g_channel_source="Albedo"
-invert_g=false
-b_channel_source="Albedo"
-invert_b=false
-a_channel_source="Albedo"
-invert_a=false
-compression="BPTC"
-use_mipmaps=true
-is_normal_map=false
+red/source_image="Albedo"
+red/remap="Red"
+red/invert=false
+green/source_image="Albedo"
+green/remap="Green"
+green/invert=false
+blue/source_image="Albedo"
+blue/remap="Blue"
+blue/invert=false
+alpha/source_image="Albedo"
+alpha/remap="Alpha"
+alpha/invert=false
+format/type="sRGB"
+format/compression="BPTC"
+format/use_mipmaps=true

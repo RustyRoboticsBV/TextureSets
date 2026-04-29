@@ -12,19 +12,18 @@ dest_files=["res://.godot/imported/SmileyE.zip-1e1a6257496a86f3f5ac2141d91db388.
 
 [params]
 
-red/source_image="Emission"
-red/remap="Red"
-red/invert=false
-green/source_image="Emission"
-green/remap="Green"
-green/invert=false
-blue/source_image="Emission"
-blue/remap="Blue"
-blue/invert=false
-alpha/source_image="Emission"
-alpha/remap="Alpha"
-alpha/invert=false
 format/type="sRGB"
 format/compression="BPTC"
 format/use_mipmaps=true
-format/is_normal_map=false
+red/source_image="Emission"
+red/source_channel="Red"
+red/invert=false
+green/source_image="Emission"
+green/source_channel="Green"
+green/invert=false
+blue/source_image="Emission"
+blue/source_channel="Blue"
+blue/invert=false
+alpha/source_image="Emission"
+alpha/source_channel="Alpha"
+alpha/invert=false

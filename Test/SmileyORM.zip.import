@@ -12,19 +12,18 @@ dest_files=["res://.godot/imported/SmileyORM.zip-67feea0b5241c041857e36bc8e64241
 
 [params]
 
-red/source_image="Occlusion"
-red/remap="Red"
-red/invert=false
-green/source_image="Roughness"
-green/remap="Green"
-green/invert=false
-blue/source_image="Metal"
-blue/remap="Blue"
-blue/invert=false
-alpha/source_image=""
-alpha/remap="Alpha"
-alpha/invert=false
 format/type="Linear"
 format/compression="BPTC"
 format/use_mipmaps=true
-format/is_normal_map=false
+red/source_image="Occlusion"
+red/source_channel="Red"
+red/invert=false
+green/source_image="Roughness"
+green/source_channel="Green"
+green/invert=false
+blue/source_image="Metal"
+blue/source_channel="Blue"
+blue/invert=false
+alpha/source_image=""
+alpha/source_channel="Alpha"
+alpha/invert=false

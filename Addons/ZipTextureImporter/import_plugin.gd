@@ -6,19 +6,19 @@ const FormatCompression = "format/compression";
 const FormatUseMipmaps = "format/use_mipmaps";
 
 const RedSourceImage = "red/source_image";
-const RedRemap = "red/remap";
+const RedSourceChannel = "red/source_channel";
 const RedInvert = "red/invert";
 
 const GreenSourceImage = "green/source_image";
-const GreenRemap = "green/remap";
+const GreenSourceChannel = "green/source_channel";
 const GreenInvert = "green/invert";
 
 const BlueSourceImage = "blue/source_image";
-const BlueRemap = "blue/remap";
+const BlueSourceChannel = "blue/source_channel";
 const BlueInvert = "blue/invert";
 
 const AlphaSourceImage = "alpha/source_image";
-const AlphaRemap = "alpha/remap";
+const AlphaSourceChannel = "alpha/source_channel";
 const AlphaInvert = "alpha/invert";
 
 const Presets = [
@@ -151,7 +151,7 @@ func _get_import_options(_path: String, preset_index: int) -> Array:
 			"default_value": Red[preset_index]
 		},
 		{
-			"name": RedRemap,
+			"name": RedSourceChannel,
 			"default_value": "Red",
 			"property_hint": PROPERTY_HINT_ENUM,
 			"hint_string": "Red,Green,Blue,Alpha"
@@ -166,7 +166,7 @@ func _get_import_options(_path: String, preset_index: int) -> Array:
 			"default_value": Green[preset_index]
 		},
 		{
-			"name": GreenRemap,
+			"name": GreenSourceChannel,
 			"default_value": "Green",
 			"property_hint": PROPERTY_HINT_ENUM,
 			"hint_string": "Red,Green,Blue,Alpha"
@@ -181,7 +181,7 @@ func _get_import_options(_path: String, preset_index: int) -> Array:
 			"default_value": Blue[preset_index]
 		},
 		{
-			"name": BlueRemap,
+			"name": BlueSourceChannel,
 			"default_value": "Blue",
 			"property_hint": PROPERTY_HINT_ENUM,
 			"hint_string": "Red,Green,Blue,Alpha"
@@ -196,7 +196,7 @@ func _get_import_options(_path: String, preset_index: int) -> Array:
 			"default_value": Alpha[preset_index]
 		},
 		{
-			"name": AlphaRemap,
+			"name": AlphaSourceChannel,
 			"default_value": "Alpha",
 			"property_hint": PROPERTY_HINT_ENUM,
 			"hint_string": "Red,Green,Blue,Alpha"

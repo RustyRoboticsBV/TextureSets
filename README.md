@@ -15,10 +15,12 @@ It can handle all image formats that Godot can handle by default: `.bmp`, `.png`
 
 ## Usage
 Any ZIP file in your resource folder can be imported as a `ZIP Texture`. In the importer, you can:
-- Specify which images the red, green, blue and alpha channels should be taken from.
-- Inverting specific channels.
+- Set the texture type (linear, sRGB or normal map).
 - Select the compression type.
 - Enable mipmaps.
-- Mark the texture as a normal map.
+- For each channel:
+  - Specify which zipped image the channel should be taken from.
+  - Specify which channel of the zipped image the channel should be taken from.
+  - Invert the channel.
 
 Several importer presets are available for importing common texture types, such as albedo, normal, metal, roughness, occlusion, ORM and emission.

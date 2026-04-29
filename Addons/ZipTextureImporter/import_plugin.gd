@@ -4,6 +4,7 @@ extends EditorImportPlugin;
 const FormatType = "format/type";
 const FormatCompression = "format/compression";
 const FormatUseMipmaps = "format/use_mipmaps";
+const FormatPremultiplyAlpha = "format/premultiply_alpha";
 
 const RedSourceImage = "red/source_image";
 const RedSourceChannel = "red/source_channel";
@@ -145,6 +146,10 @@ func _get_import_options(_path: String, preset_index: int) -> Array:
 			"name": FormatUseMipmaps,
 			"default_value": true
 		},
+		{
+			"name": FormatPremultiplyAlpha,
+			"default_value": Presets[preset_index] == "Emission"
+		},
 		
 		{
 			"name": RedSourceImage,
@@ -259,6 +264,11 @@ func _import(source_file: String, save_path: String, options: Dictionary, _platf
 	
 	# Apply inversions.
 	invert_image_channel(img, options[RedInvert], options[GreenInvert], options[BlueInvert], options[AlphaInvert]);
+	
+	# Premultiply alpha.
+	if options[FormatPremultiplyAlpha]:
+		img.premultiply_alpha();
+		img = pack_image(img, img, img, null);
 	
 	# Mipmaps.
 	if options[FormatUseMipmaps]:

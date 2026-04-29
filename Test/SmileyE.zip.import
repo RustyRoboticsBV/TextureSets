@@ -15,6 +15,7 @@ dest_files=["res://.godot/imported/SmileyE.zip-1e1a6257496a86f3f5ac2141d91db388.
 format/type="sRGB"
 format/compression="BPTC"
 format/use_mipmaps=true
+format/premultiply_alpha=true
 red/source_image="Emission"
 red/source_channel="Red"
 red/invert=false

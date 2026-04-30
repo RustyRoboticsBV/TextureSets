@@ -3,7 +3,7 @@
   <img src="Images/Example.png" width="800">
 </p>
 
-An Godot import plugin for loading ZIP archives as textures.
+A Godot import plugin for loading ZIP archives as textures.
 
 It can to combine several images from a ZIP archive into one texture resource. This allows you to, for example, maintain your metal, roughness and occlusion maps as separate files, but still load them as one texture.
 
